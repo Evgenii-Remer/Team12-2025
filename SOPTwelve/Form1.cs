@@ -30,23 +30,47 @@ namespace SOPTwelve
 
 		private async void button1_Click(object sender, EventArgs e)
 		{
-			//var ms = new MemoryStream();
-			//var devData = webView21.CoreWebView2.CapturePreviewAsync(Microsoft.Web.WebView2.Core.CoreWebView2CapturePreviewImageFormat.Jpeg, ms);
+			if (client == null)
+			{
+				client = new ApiClient(txInstance.Text,
+					 ignoreSslErrors: true // this is here to allow testing with self-signed certificates
+					);
+			}
 
+			client.Login(tbUser.Text, tbPassword.Text);
+			try
+			{
+				//var order = client.GetById<WikiPage>(new Guid("47F3EBB4-E459-4009-9DA3-CDD917C968B3"));
+				//var order = client.GetByKeys<WikiPage>(new List<string>() { "47F3EBB4-E459-4009-9DA3-CDD917C968B3" }, expand: "files");
 
+				//var order = client.GetByKeys<SalesOrder>(new List<string>() { "SO", "SO008319" }, expand: "files");
 
-			//var bitmap = (Bitmap)Image.FromStream(ms.);
-			//bitmap.Save("c:\\temp\\screenshot.png");
-			//webView21.CoreWebView2.PrintToPdfAsync("c:\\temp\\File.pdf");
-			FileStream fs = File.Create("c:\\temp\\capture2.jpg");
-			MemoryStream memoryStream = new MemoryStream();
-			System.Threading.Tasks.Task t = webView21.CoreWebView2.CapturePreviewAsync(Microsoft.Web.WebView2.Core.CoreWebView2CapturePreviewImageFormat.Jpeg, fs);
-			await t;
+				////System.Threading.Tasks.Task t = webView21.CoreWebView2.CapturePreviewAsync(Microsoft.Web.WebView2.Core.CoreWebView2CapturePreviewImageFormat.Jpeg, memoryStream);
+				////await t;
 
-			fs.Close();
+				////string fileName = "capture" + (order?.Files?.Count + 1).ToString() ?? "" + ".jpg";
+				////string fileDesc = "It is a capture";
+				////Obsolete
+				////client.PutFile<SalesOrder>("SO/SO005207", fileName, initialData);
+
+				////client.PutFile(order, fileName, memoryStream.ToArray(), fileDesc);
+
+				////order = client.GetByKeys<SalesOrder>(new List<string>() { "SO", "SO008320" }, expand: "files");
+
+				var revision = client.GetByKeys<WikiRevision>(new List<string>() { "47f3ebb4-e459-4009-9da3-cdd917c968b3", "en-US", "5" });
+				var sb = new StringBuilder(revision.Content);
+				sb.AppendLine(richTextBox1.Text);
+				revision.Content = sb.ToString();
+
+				client.Put(revision);
+
+			}
+			finally
+			{
+				client.Logout();
+			}
 
 		}
-
 		private async void button2_Click(object sender, EventArgs e)
 		{
 			var client = new ApiClient("http://localhost/ClearSite",
@@ -92,22 +116,22 @@ namespace SOPTwelve
 			{
 				//var order = client.GetById<WikiPage>(new Guid("47F3EBB4-E459-4009-9DA3-CDD917C968B3"));
 				//var order = client.GetByKeys<WikiPage>(new List<string>() { "47F3EBB4-E459-4009-9DA3-CDD917C968B3" }, expand: "files");
-		
+
 				var order = client.GetByKeys<SalesOrder>(new List<string>() { "SO", "SO008319" }, expand: "files");
-				
+
 				System.Threading.Tasks.Task t = webView21.CoreWebView2.CapturePreviewAsync(Microsoft.Web.WebView2.Core.CoreWebView2CapturePreviewImageFormat.Jpeg, memoryStream);
 				await t;
 
-				string fileName = "capture"+ (order?.Files?.Count +1).ToString() ?? "" +".jpg";
+				string fileName = "capture" + (order?.Files?.Count + 1).ToString() ?? "" + ".jpg";
 				string fileDesc = "It is a capture";
 				//Obsolete
 				//client.PutFile<SalesOrder>("SO/SO005207", fileName, initialData);
 
 				client.PutFile(order, fileName, memoryStream.ToArray(), fileDesc);
-				
+
 				order = client.GetByKeys<SalesOrder>(new List<string>() { "SO", "SO008320" }, expand: "files");
 
-				var revision = client.GetByKeys<WikiRevision>(new List<string>() { "47f3ebb4-e459-4009-9da3-cdd917c968b3","en-US","4" });
+				var revision = client.GetByKeys<WikiRevision>(new List<string>() { "47f3ebb4-e459-4009-9da3-cdd917c968b3", "en-US", "4" });
 
 
 			}

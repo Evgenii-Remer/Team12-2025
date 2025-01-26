@@ -27,7 +27,10 @@ namespace SOPTwelve
 
 
 		[DataMember(Name = "PageRevisionID", EmitDefaultValue = false)]
-		public IntValue? PageRevisionID { get; set; }
+		public StringValue? PageRevisionID { get; set; }
+
+		[DataMember(Name = "Content", EmitDefaultValue = false)]
+		public StringValue? Content { get; set; }
 
 		/// <summary>
 		/// Gets or Sets Files
