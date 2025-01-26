@@ -26,3 +26,16 @@ C:\repos\Team12-2025\SOPTwelve\obj\Debug\net7.0-windows7.0\refint\SOPTwelve.dll
 C:\repos\Team12-2025\SOPTwelve\obj\Debug\net7.0-windows7.0\SOPTwelve.pdb
 C:\repos\Team12-2025\SOPTwelve\obj\Debug\net7.0-windows7.0\SOPTwelve.genruntimeconfig.cache
 C:\repos\Team12-2025\SOPTwelve\obj\Debug\net7.0-windows7.0\ref\SOPTwelve.dll
+C:\repos\Team12-2025\SOPTwelve\bin\Debug\net7.0-windows7.0\Acumatica.Default_24.200.001.dll
+C:\repos\Team12-2025\SOPTwelve\bin\Debug\net7.0-windows7.0\Acumatica.RESTClient.dll
+C:\repos\Team12-2025\SOPTwelve\bin\Debug\net7.0-windows7.0\Acumatica.RESTClient.ContractBasedApi.dll
+C:\repos\Team12-2025\SOPTwelve\bin\Debug\net7.0-windows7.0\JsonSubTypes.dll
+C:\repos\Team12-2025\SOPTwelve\bin\Debug\net7.0-windows7.0\Microsoft.Extensions.Configuration.Abstractions.dll
+C:\repos\Team12-2025\SOPTwelve\bin\Debug\net7.0-windows7.0\Microsoft.Extensions.DependencyInjection.dll
+C:\repos\Team12-2025\SOPTwelve\bin\Debug\net7.0-windows7.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\repos\Team12-2025\SOPTwelve\bin\Debug\net7.0-windows7.0\Microsoft.Extensions.Http.dll
+C:\repos\Team12-2025\SOPTwelve\bin\Debug\net7.0-windows7.0\Microsoft.Extensions.Logging.dll
+C:\repos\Team12-2025\SOPTwelve\bin\Debug\net7.0-windows7.0\Microsoft.Extensions.Logging.Abstractions.dll
+C:\repos\Team12-2025\SOPTwelve\bin\Debug\net7.0-windows7.0\Microsoft.Extensions.Options.dll
+C:\repos\Team12-2025\SOPTwelve\bin\Debug\net7.0-windows7.0\Microsoft.Extensions.Primitives.dll
+C:\repos\Team12-2025\SOPTwelve\bin\Debug\net7.0-windows7.0\Newtonsoft.Json.dll

@@ -1,10 +1,23 @@
 {
   "version": 2,
-  "dgSpecHash": "vP7NB4xwk9A=",
+  "dgSpecHash": "/tWEfoWi6Nw=",
   "success": true,
   "projectFilePath": "C:\\repos\\Team12-2025\\SOPTwelve\\SOPTwelve.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\eugeny.remer\\.nuget\\packages\\microsoft.web.webview2\\1.0.2957.106\\microsoft.web.webview2.1.0.2957.106.nupkg.sha512"
+    "C:\\Users\\eugeny.remer\\.nuget\\packages\\acumatica.default_24.200.001\\5.3.0\\acumatica.default_24.200.001.5.3.0.nupkg.sha512",
+    "C:\\Users\\eugeny.remer\\.nuget\\packages\\acumatica.restclient\\5.3.0\\acumatica.restclient.5.3.0.nupkg.sha512",
+    "C:\\Users\\eugeny.remer\\.nuget\\packages\\acumatica.restclient.contractbasedapi\\5.3.0\\acumatica.restclient.contractbasedapi.5.3.0.nupkg.sha512",
+    "C:\\Users\\eugeny.remer\\.nuget\\packages\\jsonsubtypes\\2.0.1\\jsonsubtypes.2.0.1.nupkg.sha512",
+    "C:\\Users\\eugeny.remer\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\8.0.0-rc.2.23479.6\\microsoft.extensions.configuration.abstractions.8.0.0-rc.2.23479.6.nupkg.sha512",
+    "C:\\Users\\eugeny.remer\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\8.0.0-rc.2.23479.6\\microsoft.extensions.dependencyinjection.8.0.0-rc.2.23479.6.nupkg.sha512",
+    "C:\\Users\\eugeny.remer\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0-rc.2.23479.6\\microsoft.extensions.dependencyinjection.abstractions.8.0.0-rc.2.23479.6.nupkg.sha512",
+    "C:\\Users\\eugeny.remer\\.nuget\\packages\\microsoft.extensions.http\\8.0.0-rc.2.23479.6\\microsoft.extensions.http.8.0.0-rc.2.23479.6.nupkg.sha512",
+    "C:\\Users\\eugeny.remer\\.nuget\\packages\\microsoft.extensions.logging\\8.0.0-rc.2.23479.6\\microsoft.extensions.logging.8.0.0-rc.2.23479.6.nupkg.sha512",
+    "C:\\Users\\eugeny.remer\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.0-rc.2.23479.6\\microsoft.extensions.logging.abstractions.8.0.0-rc.2.23479.6.nupkg.sha512",
+    "C:\\Users\\eugeny.remer\\.nuget\\packages\\microsoft.extensions.options\\8.0.0-rc.2.23479.6\\microsoft.extensions.options.8.0.0-rc.2.23479.6.nupkg.sha512",
+    "C:\\Users\\eugeny.remer\\.nuget\\packages\\microsoft.extensions.primitives\\8.0.0-rc.2.23479.6\\microsoft.extensions.primitives.8.0.0-rc.2.23479.6.nupkg.sha512",
+    "C:\\Users\\eugeny.remer\\.nuget\\packages\\microsoft.web.webview2\\1.0.2957.106\\microsoft.web.webview2.1.0.2957.106.nupkg.sha512",
+    "C:\\Users\\eugeny.remer\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512"
   ],
   "logs": []
 }

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SOPTwelve")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9a0e1810e1fc0250e16bf2bf876194455e3c8f0a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cf4e556dca25a4d4a5d6ab5979f7f13e24318f38")]
 [assembly: System.Reflection.AssemblyProductAttribute("SOPTwelve")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SOPTwelve")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
