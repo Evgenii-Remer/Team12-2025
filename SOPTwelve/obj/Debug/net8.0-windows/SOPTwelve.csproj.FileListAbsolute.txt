@@ -1,0 +1,17 @@
+C:\repos\Team12-2025\SOPTwelve\bin\Debug\net8.0-windows\SOPTwelve.exe
+C:\repos\Team12-2025\SOPTwelve\bin\Debug\net8.0-windows\SOPTwelve.deps.json
+C:\repos\Team12-2025\SOPTwelve\bin\Debug\net8.0-windows\SOPTwelve.runtimeconfig.json
+C:\repos\Team12-2025\SOPTwelve\bin\Debug\net8.0-windows\SOPTwelve.dll
+C:\repos\Team12-2025\SOPTwelve\bin\Debug\net8.0-windows\SOPTwelve.pdb
+C:\repos\Team12-2025\SOPTwelve\obj\Debug\net8.0-windows\SOPTwelve.GeneratedMSBuildEditorConfig.editorconfig
+C:\repos\Team12-2025\SOPTwelve\obj\Debug\net8.0-windows\SOPTwelve.AssemblyInfoInputs.cache
+C:\repos\Team12-2025\SOPTwelve\obj\Debug\net8.0-windows\SOPTwelve.AssemblyInfo.cs
+C:\repos\Team12-2025\SOPTwelve\obj\Debug\net8.0-windows\SOPTwelve.csproj.CoreCompileInputs.cache
+C:\repos\Team12-2025\SOPTwelve\obj\Debug\net8.0-windows\SOPTwelve.sourcelink.json
+C:\repos\Team12-2025\SOPTwelve\obj\Debug\net8.0-windows\SOPTwelve.dll
+C:\repos\Team12-2025\SOPTwelve\obj\Debug\net8.0-windows\refint\SOPTwelve.dll
+C:\repos\Team12-2025\SOPTwelve\obj\Debug\net8.0-windows\SOPTwelve.pdb
+C:\repos\Team12-2025\SOPTwelve\obj\Debug\net8.0-windows\SOPTwelve.genruntimeconfig.cache
+C:\repos\Team12-2025\SOPTwelve\obj\Debug\net8.0-windows\ref\SOPTwelve.dll
+C:\repos\Team12-2025\SOPTwelve\obj\Debug\net8.0-windows\SOPTwelve.Form1.resources
+C:\repos\Team12-2025\SOPTwelve\obj\Debug\net8.0-windows\SOPTwelve.csproj.GenerateResource.cache

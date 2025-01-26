@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "vP7NB4xwk9A=",
+  "success": true,
+  "projectFilePath": "C:\\repos\\Team12-2025\\SOPTwelve\\SOPTwelve.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\eugeny.remer\\.nuget\\packages\\microsoft.web.webview2\\1.0.2957.106\\microsoft.web.webview2.1.0.2957.106.nupkg.sha512"
+  ],
+  "logs": []
+}

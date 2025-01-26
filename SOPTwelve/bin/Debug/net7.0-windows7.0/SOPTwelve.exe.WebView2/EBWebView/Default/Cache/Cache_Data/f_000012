@@ -1,0 +1,727 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Copyright (c) 1994-2006 Acumatica Inc. All rights reserved. -->
+
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+	<xsl:output omit-xml-declaration="yes" method="html"/>
+	
+	<xsl:param name="parentHash" />
+	<xsl:param name="showDeletedRows" select="'True'"/>
+	<xsl:param name="renderDraggable" select="'True'"/>
+	<xsl:key name="rowsKey" match="Rows" use="@HashCode"/>
+	<xsl:variable name="gridID" select="/PXGrid/@ID"/>
+
+	<xsl:template match="/">
+		<xsl:apply-templates select="key('rowsKey', $parentHash)"/>
+	</xsl:template>
+
+	<!-- ==================================================================== -->
+	<!-- Render the rows collection HTML table element -->
+	<xsl:template match="Rows">
+		<xsl:variable name="li" select="number(@Level)+1" />
+		<xsl:variable name="level" select="/PXGrid/Levels/Level[$li]" />
+		<xsl:variable name="layout" select="$level/Layout" />
+		<xsl:variable name="rs" select="$layout/@RowSelectorsVisible = 'True'" />
+
+		<table id="{$gridID}_dataT{@Level}" name="{$gridID}_dataT{@Level}" class="gridDataT"
+				cellpadding="{$layout/@CellPadding}" cellspacing="{$layout/@CellSpacing}"
+				border="0" style="table-layout:fixed;width:0px;">
+			<xsl:if test="$level/Row">
+				<xsl:attribute name="data-newRow">true</xsl:attribute>
+			</xsl:if>
+
+			<colgroup>
+				<xsl:if test="$rs">
+					<col style="width:{$layout/@RowSelectorsWidth};" />
+				</xsl:if>
+				<xsl:for-each select="$level/Columns/Column">
+					<xsl:if test="not(./@Visible) or ./@Visible = 'True'">
+						<col style="width:{@Width};" />
+					</xsl:if>
+				</xsl:for-each>
+			</colgroup>
+			
+			<thead>
+				<tr>
+					<xsl:if test="($li = 1) or ($layout/@HeaderVisible != 'True')">
+						<xsl:attribute name="style">display:none;</xsl:attribute>
+					</xsl:if>
+
+					<xsl:if test="$rs">
+						<xsl:call-template name="GridCorner">
+							<xsl:with-param name="level" select="$level" />
+						</xsl:call-template>
+					</xsl:if>
+					
+					<xsl:apply-templates select="$level/Columns/Column" mode="th">
+						<xsl:with-param name="level" select="$level" />
+					</xsl:apply-templates>
+				</tr>
+			</thead>
+			
+			<tbody>
+				<xsl:variable name="rowsHash">
+					<xsl:if test="string(./@HashCode)">
+						<xsl:value-of select="concat('_', ./@HashCode)"/>
+					</xsl:if>
+				</xsl:variable>
+
+				<xsl:for-each select="Row
+					[(number(./@Status) != 5) and ($showDeletedRows = 'True' or (number(./@Status) != 4))]">
+					<xsl:call-template name="Row">
+						<xsl:with-param name="row" select="." />
+						<xsl:with-param name="index" select="position()-1" />
+						<xsl:with-param name="level" select="$level" />
+						<xsl:with-param name="hashCode" select="$rowsHash" />
+					</xsl:call-template>
+				</xsl:for-each>
+				
+				<!-- Render the new row template -->
+				<xsl:if test="$level/Row">
+					<xsl:call-template name="Row">
+						<xsl:with-param name="row" select="$level/Row" />
+						<xsl:with-param name="level" select="$level" />
+						<xsl:with-param name="hashCode" select="$rowsHash" />
+					</xsl:call-template>
+				</xsl:if>
+			</tbody>
+			
+			<xsl:if test="($li != 1) and ($layout/@FooterVisible = 'True')">
+				<tfoot>
+					<xsl:if test="$rs">
+						<xsl:call-template name="GridCornerF">
+							<xsl:with-param name="level" select="$level" />
+						</xsl:call-template>
+					</xsl:if>
+
+					<xsl:apply-templates select="$level/Columns/Column" mode="tf">
+						<xsl:with-param name="level" select="$level" />
+					</xsl:apply-templates>
+				</tfoot>	
+			</xsl:if>
+		</table>
+	</xsl:template>
+
+	<!-- ==================================================================== -->
+	<!-- Render the row selector Col element or table Cell -->
+	<xsl:template name="RowSelector">
+		<xsl:param name="level"/>
+		<xsl:param name="row"/>
+		<xsl:variable name = "im" select="$level/Images" />
+		<xsl:variable name="status" select="$row/@Status" />
+		<xsl:variable name="errorText" select="$row/@Error" />
+		<xsl:variable name="warnText" select="$row/@Warning" />
+		<xsl:variable name="infoText" select="$row/@Info" />
+		<xsl:variable name="hasNote" select="$row/@HasNote" />
+		<xsl:variable name="hasFiles" select="$row/@HasFiles" />
+		<xsl:variable name="showStatus" select="$level/Layout/@ShowRowStatus = 'True'" />
+
+		<td class="{$level/Styles/@RowSelector}" style="padding:0px;">
+			<xsl:if test="$errorText or $infoText or $warnText">
+				<xsl:attribute name="title">
+					<xsl:choose>
+						<xsl:when test="$errorText">
+							<xsl:value-of select="$errorText" />
+						</xsl:when>
+						<xsl:when test="$warnText">
+							<xsl:value-of select="$warnText" />
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="$infoText" />
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:attribute>
+			</xsl:if>
+
+			<xsl:if test="$errorText or $warnText">
+				<xsl:attribute name="error">
+					<xsl:choose>
+						<xsl:when test="$errorText">
+							<xsl:value-of select="2" />
+						</xsl:when>
+						<xsl:when test="$warnText">
+							<xsl:value-of select="1" />
+						</xsl:when>
+					</xsl:choose>
+				</xsl:attribute>
+			</xsl:if>
+
+			<xsl:call-template name="Image">
+				<xsl:with-param name="src">
+					<xsl:choose>
+						<xsl:when test="$errorText">
+							<xsl:value-of select="$im/@RowError"/>
+						</xsl:when>
+						<xsl:when test="$warnText">
+							<xsl:value-of select="$im/@RowWarning"/>
+						</xsl:when>
+						<xsl:when test="$infoText">
+							<xsl:value-of select="$im/@RowInfo"/>
+						</xsl:when>
+						<xsl:when test="$status = 1 and $showStatus">
+							<xsl:value-of select="$im/@ModifiedRow"/>
+						</xsl:when>
+						<xsl:when test="$status = 3 and $showStatus">
+							<xsl:value-of select="$im/@InsertedRow"/>
+						</xsl:when>
+						<xsl:when test="$status = 4 and $showStatus">
+							<xsl:value-of select="$im/@DeletedRow"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="$im/@RowLabel"/>
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:with-param>							
+				<xsl:with-param name="error">
+					<xsl:choose>
+						<xsl:when test="$errorText"><xsl:value-of select="2"/></xsl:when>
+						<xsl:when test="$warnText"><xsl:value-of select="1"/></xsl:when>
+					</xsl:choose>
+				</xsl:with-param>
+			</xsl:call-template>
+		</td>
+	</xsl:template>
+
+	<!-- Render the grid corner table Cell -->
+	<xsl:template name="GridCorner">
+		<xsl:param name="level"/>
+
+		<td class="{$level/Styles/@Header}" style="padding:0px;">
+			<xsl:call-template name="Image">
+				<xsl:with-param name="src" select="$level/Images/@GridCorner" />
+			</xsl:call-template>
+		</td>
+	</xsl:template>
+
+	<xsl:template name="GridCornerF">
+		<xsl:param name="level"/>
+
+		<td class="{$level/Styles/@Footer}" style="padding:0px;">
+			<xsl:text >&#160;</xsl:text>
+		</td>
+	</xsl:template>
+
+	<!-- ==================================================================== -->
+	<!-- Render the column Header/Footer elements -->
+	<xsl:template match="Column" mode="th">
+		<xsl:param name="level"/>
+		<xsl:variable name="colI" select="position()-1" />
+		<xsl:variable name="cellID" select="concat($gridID, '_colH_', $level/@i, '_', $colI)" />
+		
+		<td class="{$level/Styles/@Header}" id="{$cellID}" name="{$cellID}">
+			<xsl:if test="./@Visible = 'False'">
+				<xsl:attribute name="style">display:none;</xsl:attribute>
+			</xsl:if>
+			<xsl:call-template name="HtmlText">
+				<xsl:with-param name="text" select="Header/@Text" />
+			</xsl:call-template>
+		</td>
+	</xsl:template>
+
+	<xsl:template match="Column" mode="tf">
+		<xsl:param name="level"/>
+		<xsl:variable name="colI" select="position()-1" />
+		<xsl:variable name="cellID" select="concat($gridID, '_colF_', $level/@i, '_', $colI)" />
+
+		<td class="{$level/Styles/@Footer}" id="{$cellID}" name="{$cellID}" >
+			<xsl:if test="./@Visible = 'False'">
+				<xsl:attribute name="style">display:none;</xsl:attribute>
+			</xsl:if>
+			<xsl:call-template name="HtmlText">
+				<xsl:with-param name="text" select="Footer/@Text" />
+			</xsl:call-template>
+		</td>
+	</xsl:template>
+
+	<!-- ==================================================================== -->
+	<!-- Render the grid data rows -->
+	<xsl:template name="Row">
+		<xsl:param name="row"/>		
+		<xsl:param name="index" select="-1"/>
+		<xsl:param name="level"/>
+		<xsl:param name="hashCode"/>
+		<xsl:variable name="layout" select="$level/Layout" />
+
+		<tr xmlIndex="{$row/@i}">
+			<xsl:attribute name="id">
+				<xsl:choose>
+					<xsl:when test="$index >= 0">
+						<xsl:value-of select="concat($gridID, '_row', $hashCode, '_', $row/@i)"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="concat($gridID, '_newRow', $hashCode)"/>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:attribute>
+
+			<xsl:if test="$layout/@RowHeight or ($row/@Visible = 'False')">
+				<xsl:attribute name="style">
+					<xsl:if test="$layout/@RowHeight">
+						<xsl:value-of select="concat('height:', $layout/@RowHeight, ';')" />
+					</xsl:if>
+					<xsl:if test="$row/@Visible = 'False'">
+						<xsl:text>display:none;</xsl:text>
+					</xsl:if>
+				</xsl:attribute>
+			</xsl:if>
+
+			<xsl:if test="$layout/@RowSelectorsVisible = 'True'">
+				<xsl:call-template name="RowSelector" >
+					<xsl:with-param name="level" select="$level" />
+					<xsl:with-param name="row" select="$row" />
+				</xsl:call-template>
+			</xsl:if>
+
+			<xsl:variable name="css">
+				<xsl:choose>
+					<xsl:when test="($index mod 2) = 1">
+						<xsl:value-of select="$level/Styles/@AltRow"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="$level/Styles/@Row"/>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:variable>
+			
+			<xsl:variable name="wrapText" select="$layout/@WrapText = 'True'" />
+			<!-- Render the current row cells -->
+			<xsl:for-each select="$level/Columns/Column">
+				<xsl:call-template name="cellTemplate">
+					<xsl:with-param name="level" select="$level" />
+					<xsl:with-param name="row" select="$row" />
+					<xsl:with-param name="className" select="$css" />
+					<xsl:with-param name="wrapText" select="$wrapText" />
+				</xsl:call-template>
+			</xsl:for-each>
+		</tr>
+	</xsl:template>
+
+	<!-- ==================================================================== -->
+	<!-- Render the grid data cells -->
+	<xsl:template name="cellTemplate">
+		<xsl:param name="level"/>
+		<xsl:param name="row" />
+		<xsl:param name="className" />
+		<xsl:param name="wrapText" />
+		<xsl:variable name="cellI" select="number(./@i) + 1" />
+		<xsl:variable name="cell" select="$row/Cells/Cell[$cellI]" />
+
+		<!-- check if cell has error text -->
+		<xsl:variable name="errorText" select="$cell/@Error" />
+		<xsl:variable name="warnText" select="$cell/@Warning" />
+		<xsl:variable name="readOnly" select="$cell/@ReadOnly" />
+		<xsl:variable name="css">
+			<xsl:choose>
+				<xsl:when test="$errorText">
+					<xsl:value-of select="$level/Styles/@Error"/>
+				</xsl:when>
+				<xsl:when test="$warnText">
+					<xsl:value-of select="$level/Styles/@Warning"/>
+				</xsl:when>
+				<xsl:when test="$level/@AllowUpdate = 'True' and 
+							($readOnly = 'True' or (./@AllowUpdate = 'False' and not($readOnly)))">
+					<xsl:value-of select="$level/Styles/@ReadOnlyCell"/>
+				</xsl:when>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="cssM">
+			<xsl:if test="./@Multiline">wrapText</xsl:if>
+		</xsl:variable>
+		<xsl:variable name="cssEL">
+			<xsl:if test="./@Ellipsis">ellipsis</xsl:if>
+		</xsl:variable>
+
+		<td>
+			<xsl:if test="$css or $className or ./Styles/@Row or $row/@Css">
+				<xsl:attribute name="class">
+					<xsl:value-of select="normalize-space(concat(
+						$className, ' ', $css, ' ', ./Styles/@Row, ' ', $row/@Css, ' ', $cssM, ' ', $cssEL, ' ', $cell/@Css))" />
+				</xsl:attribute>
+			</xsl:if>
+
+			<xsl:if test="./@Draggable or ($level/@Draggable = 'True' and $renderDraggable = 'True')">
+				<xsl:attribute name="draggable">true</xsl:attribute>
+			</xsl:if>
+			<xsl:if test="./@TextAlign">
+				<xsl:attribute name="align">
+					<xsl:value-of select="./@TextAlign" />
+				</xsl:attribute>
+			</xsl:if>
+
+			<xsl:if test="$errorText or $warnText">
+				<xsl:attribute name="error">
+					<xsl:choose>
+						<xsl:when test="$errorText"><xsl:value-of select="2" /></xsl:when>
+						<xsl:when test="$warnText"><xsl:value-of select="1" />	</xsl:when>
+					</xsl:choose>
+				</xsl:attribute>
+			</xsl:if>
+				
+			<xsl:if test="$cell/@ToolTip or $errorText or $warnText">
+				<xsl:attribute name="title">
+					<xsl:choose>
+						<xsl:when test="$errorText">
+							<xsl:value-of select="$errorText" />
+						</xsl:when>
+						<xsl:when test="$warnText">
+							<xsl:value-of select="$warnText" />
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="$cell/@ToolTip" />
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:attribute>
+			</xsl:if>
+
+			<xsl:if test="./@Visible = 'False'">
+				<xsl:attribute name="style">display:none;</xsl:attribute>
+			</xsl:if>
+
+			<!-- render the cell inner text -->
+			<xsl:choose>
+				<xsl:when test="./@Type = 'CheckBox' or $cell/@DataType = 3">
+					<xsl:call-template name="ErrorImage">
+						<xsl:with-param name="level" select="$level" />
+						<xsl:with-param name="error" select="$errorText" />
+						<xsl:with-param name="warning" select="$warnText" />
+					</xsl:call-template>
+
+					<xsl:choose>
+						<xsl:when test="string($cell/@Text)">
+							<xsl:call-template name="CheckImage">
+								<xsl:with-param name="level" select="$level" />
+								<xsl:with-param name="value" select="$cell/@Value" />
+								<xsl:with-param name="align" select="'center'" />
+							</xsl:call-template>
+								&#160;<xsl:value-of select="$cell/@Text" />
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:call-template name="CheckImage">
+								<xsl:with-param name="level" select="$level" />
+								<xsl:with-param name="value" select="$cell/@Value" />
+							</xsl:call-template>
+						</xsl:otherwise>
+					</xsl:choose>
+
+				</xsl:when>
+				
+				<xsl:when test="./@Type = 'Button' and ./@ButtonDisplay = 'Always'">
+					<input type="button">
+						<xsl:attribute name="value">
+							<xsl:call-template name="CellValue">
+								<xsl:with-param name="cell" select="$cell" />
+							</xsl:call-template>
+						</xsl:attribute>
+						<xsl:attribute name="class">
+							<xsl:value-of select="normalize-space(
+								concat($level/Styles/@CellButton, ' ', ./Styles/@CellButton))" />
+						</xsl:attribute>
+					</input>
+				</xsl:when>
+
+				<xsl:when test="./@Type = 'Icon'">
+					<xsl:call-template name="ErrorImage">
+						<xsl:with-param name="level" select="$level" />
+						<xsl:with-param name="error" select="$errorText" />
+						<xsl:with-param name="warning" select="$warnText" />
+					</xsl:call-template>
+
+					<xsl:choose>
+						<xsl:when test="./@ViewLink and string($cell/@Value)">
+							<a href="javascript:void(0)">
+								<xsl:call-template name="Icon">
+									<xsl:with-param name="cell" select="$cell" />
+								</xsl:call-template>
+							</a>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:call-template name="Icon">
+								<xsl:with-param name="cell" select="$cell" />
+							</xsl:call-template>
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:when>
+
+				<xsl:when test="./@Type = 'HyperLink' or (./@ViewLink and string($cell/@Value))">
+					<xsl:call-template name="ErrorImage">
+						<xsl:with-param name="level" select="$level" />
+						<xsl:with-param name="error" select="$errorText" />
+						<xsl:with-param name="warning" select="$warnText" />
+					</xsl:call-template>
+					<a>
+						<xsl:attribute name="href">
+							<xsl:choose>
+								<xsl:when test="string($cell/@Href)">
+									<xsl:value-of select="$cell/@Href" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:text >javascript:void 0</xsl:text>
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:attribute>
+						
+						<xsl:if test="$cell[@Target]">
+							<xsl:attribute name="target">
+								<xsl:value-of select="string($cell/@Target)" />
+							</xsl:attribute>
+						</xsl:if>
+						
+						<xsl:choose>
+							<xsl:when test="string($cell/@HrefText)">
+								<xsl:value-of select="$cell/@HrefText" />
+							</xsl:when>
+							<xsl:when test="string($cell/@Href)">
+									<xsl:value-of select="$cell/@Href" />
+							</xsl:when>
+							<xsl:when test="string($cell/@Text) or string($cell/@Value)">
+								<xsl:call-template name="CellValue">
+									<xsl:with-param name="cell" select="$cell" />
+								</xsl:call-template>
+							</xsl:when>
+						</xsl:choose>
+					</a>
+				</xsl:when>
+
+				<xsl:when test="boolean($cell/@Language)">
+					<xsl:call-template name="ErrorImage">
+						<xsl:with-param name="level" select="$level" />
+						<xsl:with-param name="error" select="$errorText" />
+						<xsl:with-param name="warning" select="$warnText" />
+					</xsl:call-template>
+					<xsl:call-template name="LocCellValue">
+						<xsl:with-param name="cell" select="$cell" />
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:call-template name="ErrorImage">
+						<xsl:with-param name="level" select="$level" />
+						<xsl:with-param name="error" select="$errorText" />
+						<xsl:with-param name="warning" select="$warnText" />
+					</xsl:call-template>
+					<xsl:call-template name="CellValue">
+						<xsl:with-param name="cell" select="$cell" />
+					</xsl:call-template>
+				</xsl:otherwise>
+			</xsl:choose>
+		</td>
+	</xsl:template>
+
+	<!-- ==================================================================== -->
+	<!-- Utility functions -->
+	<xsl:template name="HtmlText">
+		<xsl:param name="text"/>
+		
+		<xsl:choose>
+			<xsl:when test="$text">
+				<xsl:value-of select="$text" disable-output-escaping="yes" />
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text >&#160;</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<xsl:template name="CellValue">
+		<xsl:param name="cell" />
+		
+		<xsl:choose>
+			<xsl:when test="$cell/@Text">
+				<xsl:choose>
+					<xsl:when test="string($cell/@Text)">
+						<xsl:value-of select="$cell/@Text" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:text >&#160;</xsl:text>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:when test="string($cell/@Value)">
+				<xsl:value-of select="$cell/@Value" />
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>&#160;</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+	
+		<xsl:template name="LocCellValue">
+		<xsl:param name="cell" />
+		<a href="javascript:void 0" data-lang="true" class="lang">
+			<xsl:value-of select="$cell/@Language" />
+		</a>
+		<span class="text">
+		<xsl:choose>
+			<xsl:when test="$cell/@Text">
+				<xsl:choose>
+					<xsl:when test="string($cell/@Text)">
+						<xsl:value-of select="$cell/@Text" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:text >&#160;</xsl:text>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:when test="string($cell/@Value)">
+				<xsl:value-of select="$cell/@Value" />
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>&#160;</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+    </span>
+	</xsl:template>
+
+	<xsl:template name="CheckImage">
+		<xsl:param name="level"/>
+		<xsl:param name="value"/>
+		<xsl:param name="align" select="-1" />
+
+		<xsl:call-template name="Image">
+			<xsl:with-param name="src">
+				<xsl:choose>
+					<xsl:when test="$value = 'True' or $value = -1">
+						<xsl:value-of select="$level/Images/@Checked" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="$level/Images/@Unchecked" />
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:with-param>
+			<xsl:with-param name="check" select="1" />
+			<xsl:with-param name="align" select="$align" />
+			<xsl:with-param name="style" select="$align" />
+		</xsl:call-template>
+	</xsl:template>
+	
+	<xsl:template name="ErrorImage">
+		<xsl:param name="level"/>
+		<xsl:param name="error"/>
+		<xsl:param name="warning"/>
+
+		<xsl:variable name="align">
+			<xsl:choose>
+				<xsl:when test="./@TextAlign = 'right'"><xsl:text>left</xsl:text></xsl:when>
+				<xsl:otherwise><xsl:text>right</xsl:text></xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+			
+		<xsl:if test="$error or $warning">
+			<xsl:choose>
+				<xsl:when test="$error">
+					<xsl:call-template name="Image">
+						<xsl:with-param name="src" select="$level/Images/@RowError" />
+						<xsl:with-param name="title" select="$error" />
+						<xsl:with-param name="error" select="2" />
+						<xsl:with-param name="align" select="$align" />
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:when test="$warning">
+					<xsl:call-template name="Image">
+						<xsl:with-param name="src" select="$level/Images/@RowWarning" />
+						<xsl:with-param name="title" select="$warning" />
+						<xsl:with-param name="error" select="1" />
+						<xsl:with-param name="align" select="$align" />
+					</xsl:call-template>
+				</xsl:when>
+			</xsl:choose>
+		</xsl:if>
+	</xsl:template>
+
+	<xsl:template name="Icon">
+		<xsl:param name="cell" />
+		
+		<xsl:choose>
+			<xsl:when test="./ValueItems">
+				<xsl:for-each select="./ValueItems/ValueItem">
+					<xsl:if test="./@Value = $cell/@Value">
+						<xsl:call-template name="Image">
+							<xsl:with-param name="src">
+								<xsl:choose>
+									<xsl:when test="./@ImageUrl">
+										<xsl:value-of select="./@ImageUrl"/>
+									</xsl:when>
+									<xsl:when test="./@DisplayValue">
+										<xsl:value-of select="./@DisplayValue"/>
+									</xsl:when>
+								</xsl:choose>
+							</xsl:with-param>
+							<xsl:with-param name="image" select="1" />
+						</xsl:call-template>
+					</xsl:if>
+				</xsl:for-each>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:call-template name="Image">
+					<xsl:with-param name="src" select="$cell/@ImageUrl" />
+					<xsl:with-param name="image" select="1" />
+				</xsl:call-template>
+			</xsl:otherwise>
+		</xsl:choose>		
+	</xsl:template>
+
+	<xsl:template name="Image">
+		<xsl:param name="src" />
+		<xsl:param name="error" select="-1" />
+		<xsl:param name="align" select="-1" />
+		<xsl:param name="check" select="-1" />
+		<xsl:param name="style" select="-1" />
+		<xsl:param name="title" select="-1" />
+		<xsl:param name="image" select="-1" />
+
+		<xsl:choose>
+			<xsl:when test="string($src)">
+				<xsl:choose>
+					<xsl:when test="contains($src, '@') ">
+						<xsl:variable name="imageSet" select="substring-before($src, '@')" />
+						<xsl:variable name="imageKey" select="substring-after($src, '@')" />
+						<div class="{concat('sprite-icon ', $imageSet, '-icon')}" icon="{$imageKey}">
+							<xsl:if test="$error != -1">
+								<xsl:attribute name="error"><xsl:value-of select="$error" /></xsl:attribute>
+							</xsl:if>
+							<xsl:if test="$align != -1">
+								<xsl:attribute name="style"><xsl:value-of select="concat('float:', $align)" /></xsl:attribute>
+							</xsl:if>
+							<xsl:if test="$check != -1">
+								<xsl:attribute name="check">1</xsl:attribute>
+							</xsl:if>
+							<xsl:if test="$title != -1">
+								<xsl:attribute name="title"><xsl:value-of select="$title" /></xsl:attribute>
+							</xsl:if>
+							<xsl:if test="$image != -1">
+								<xsl:attribute name="image">1</xsl:attribute>
+							</xsl:if>
+							<div class="{concat($imageSet, '-icon-img ', $imageSet, '-', $imageKey)}">
+								<xsl:text>&#160;</xsl:text>
+							</div>
+						</div>
+					</xsl:when>
+					<xsl:otherwise>
+						<img src="{$src}" align="absmiddle">
+							<xsl:if test="$error != -1">
+								<xsl:attribute name="error"><xsl:value-of select="$error" /></xsl:attribute>
+							</xsl:if>
+							<xsl:if test="$align != -1">
+								<xsl:attribute name="align"><xsl:value-of select="$align" /></xsl:attribute>
+							</xsl:if>
+							<xsl:if test="$check != -1">
+								<xsl:attribute name="check">1</xsl:attribute>
+							</xsl:if>
+							<xsl:if test="$title != -1">
+								<xsl:attribute name="title"><xsl:value-of select="$title" /></xsl:attribute>
+							</xsl:if>
+							<xsl:if test="$style != -1">
+								<xsl:attribute name="style"><xsl:value-of select="$style" /></xsl:attribute>
+							</xsl:if>
+							<xsl:if test="$image != -1">
+								<xsl:attribute name="image">1</xsl:attribute>
+							</xsl:if>
+						</img>
+					</xsl:otherwise>					
+				</xsl:choose>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>&#160;</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+</xsl:stylesheet>
